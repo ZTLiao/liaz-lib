@@ -4,12 +4,24 @@
 #
 
 # define the Cpp compiler to use
-# CC	= armv7a-linux-androideabi21-clang
-# CXX = armv7a-linux-androideabi21-clang++
-# CC	= aarch64-linux-android21-clang
-# CXX = aarch64-linux-android21-clang++
-# CC	= gcc
+NDK_HOME = /Users/liaozetao/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin
+CC	= gcc
 CXX = g++
+ifeq ($(firstword $(MAKECMDGOALS)),static-compile-32)
+CC	= $(NDK_HOME)/armv7a-linux-androideabi21-clang
+CXX = $(NDK_HOME)/armv7a-linux-androideabi21-clang++
+else ifeq ($(firstword $(MAKECMDGOALS)),static-compile-64)
+CC	= $(NDK_HOME)/aarch64-linux-android21-clang
+CXX = $(NDK_HOME)/aarch64-linux-android21-clang++
+endif
+ifeq ($(firstword $(MAKECMDGOALS)),dynamic-compile-32)
+CC	= $(NDK_HOME)/armv7a-linux-androideabi21-clang
+CXX = $(NDK_HOME)/armv7a-linux-androideabi21-clang++
+else ifeq ($(firstword $(MAKECMDGOALS)),dynamic-compile-64)
+CC	= $(NDK_HOME)/aarch64-linux-android21-clang
+CXX = $(NDK_HOME)/aarch64-linux-android21-clang++
+endif
+
 AR 	= ar
 
 # define any compile-time flags
@@ -120,13 +132,13 @@ $(LIBLIAZ)-64: $(OBJECTS)
 
 $(LIAZLIB)-32: $(OBJECTS)
 	@echo $(LIBOBJECTS)
-	@echo CXX -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-arm-v7.so $(LIBOBJECTS) $(LIBS)
-	$(CXX) -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-arm-v7.so $(LIBOBJECTS) $(LIBS)
+	@echo $(CXX) -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-x86.so $(LIBOBJECTS) $(LIBS)
+	$(CXX) -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-x86.so $(LIBOBJECTS) $(LIBS)
 
 $(LIAZLIB)-64: $(OBJECTS)
 	@echo $(LIBOBJECTS)
-	@echo CXX -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-arm-v8.so $(LIBOBJECTS) $(LIBS)
-	$(CXX) -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-arm-v8.so $(LIBOBJECTS) $(LIBS)
+	@echo $(CXX) -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-arm64.so $(LIBOBJECTS) $(LIBS)
+	$(CXX) -shared -fPIC $(CMDFLAGS) -o $(OUTPUTDYNAMICLIB)-arm64.so $(LIBOBJECTS) $(LIBS)
 
 $(MAIN): $(OBJECTS)
 	@echo $(OBJECTS)
